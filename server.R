@@ -32,14 +32,23 @@ shinyServer(function(input, output, session) {
   
   updateSelectInput(session, "site", choices= c("Gardouch"))
 
+################# collecteurs ###################
+  
+  updateSelectizeInput(session, "collecteurs", choices= dbGetQuery(con,"SELECT col_nom FROM lu_tables.tr_collecteurs_col;")) 
+
 #################### choix du transect #########
   
   updateSelectInput(session, "transect", choices= append("Transect", dbGetQuery(con, "select tra_transect_name from lu_tables.tr_transects_tra order by tra_id")))
 
+#################### choix des larves  #########
+  
+  updateSelectInput(session, "larves", choices= append("larves", dbGetQuery(con, "select not_notation from lu_tables.tr_notaticks_not order by not_id")), selected = "pas de larves")
+  
 ############ add output inside HTML and csv  #####  
   
     observeEvent(input$submit, {
-    new_tirage<- c(input$site, input$transect, as.character(input$date), strftime(as.POSIXct(input$time_deb), format="%H:%M:%S"), strftime(as.POSIXct(input$time_fin), format="%H:%M:%S"), paste(input$collecteurs,collapse =", "),input$nymph,input$male, input$femelles)
+    new_tirage<- c(input$site, input$transect, as.character(input$date), strftime(as.POSIXct(input$time_deb), format="%H:%M:%S"), strftime(as.POSIXct(input$time_fin), format="%H:%M:%S"), paste(input$collecteurs,collapse =", "),input$nymph,input$male, input$femelles, input$larves, input$autre)
+    observe({print(input$collecteurs)})
     tirages<<- na.omit(rbind(tirages,new_tirage))
     output$display = DT::renderDT(as.data.frame(tirages,row.names = seq(1:dim(tirages)[1])),server = F)
     write.csv2(tirages, paste0("tirage_",id,".csv"), row.names = FALSE)
@@ -47,10 +56,10 @@ shinyServer(function(input, output, session) {
                                                                    tti_time_end_cest, tti_nymph, tti_male, tti_female, tti_larva,
                                                                    tti_other, tti_collector, tti_remark, tti_insert_timestamp, tti_insert_source,
                                                                    tti_insert_user, tti_update_timestamp) VALUES ('%s','%s','%s','%s', '%s','%s', '%s','%s','%s','%s','%s','%s', '%s','%s','%s','%s')",
-                           as.character(input$date),input$transect, 110,strftime(as.POSIXct(input$time_deb), format="%H:%M:%S"), strftime(as.POSIXct(input$time_fin), format="%H:%M:%S"),input$nymph,input$male, input$femelles, 'tti_l',
-                           'tti_other', paste(input$collecteurs,collapse =", "), 'tti_remark', sub(" CEST","",Sys.time()), 'field', 'ychaval', sub(" CEST","",Sys.time())))
+                           as.character(input$date),input$transect, 110,strftime(as.POSIXct(input$time_deb), format="%H:%M:%S"), strftime(as.POSIXct(input$time_fin), format="%H:%M:%S"),input$nymph,input$male, input$femelles, input$larves, input$autre
+                           , paste(input$collecteurs,collapse =", "), 'tti_remark', sub(" CEST","",Sys.time()), 'field', 'ychaval', sub(" CEST","",Sys.time())))
 
-        })     #input$site, n'est pas dans la bdd  tti_id, tti_tra_id, tti_larva, tti_other, tti_remark
+        })     #input$site, n'est pas dans la bdd  tti_id, tti_tra_id, tti_remark
   
 
   ############ remove output inside HTML and csv  #####  

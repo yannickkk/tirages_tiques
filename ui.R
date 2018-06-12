@@ -16,10 +16,11 @@ shinyUI(fluidPage(
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
+  #splitLayout(
     sidebarPanel(
       fluidRow(
        column(6,dateInput("date","Date", value = Sys.Date())),
-       column(6, selectInput("collecteurs","collecteurs", choices = c("Nicolas Cebe", "Hélène Verheyden"), multiple = TRUE, selected = "Nicolas Cebe")), 
+       column(6, selectizeInput("collecteurs","collecteurs", choices = "", multiple = TRUE, options=list(placeholder='Choisir un Collecteur :',create = TRUE, onInitialize = I('function() { this.setValue(""); }')))), 
        column(12,hr()),
        column(6,timeInput("time_deb", "Heure Début", seconds = FALSE)),
        column(6,timeInput("time_fin", "Heure Fin", seconds = FALSE)),
@@ -38,7 +39,11 @@ shinyUI(fluidPage(
        column(6,sliderInput("male","Mâles",0,10,0,1)),
        column(6,sliderInput("femelles","Femelles",0,10,0,1)),
        column(4,actionButton("submit","Soumettre"),offset = 2),
-       column(4,actionButton("supress","Supprimer"),offset = 2)
+       column(4,actionButton("supress","Supprimer"),offset = 2),
+       column(12,hr()),
+       column(6,selectInput("larves","Larves",choices = NULL)),
+       column(6,textInput("autre","Autre"))
+
     )),
     
     # Show a plot of the generated distribution
