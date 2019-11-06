@@ -1,2 +1,3 @@
-# tirages_tiques
-Formulaire pour les tirages de tiques
+# App tirages_tiques
+
+Démo de formulaire pour les tirages de tiques
